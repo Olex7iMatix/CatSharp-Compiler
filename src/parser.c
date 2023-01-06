@@ -72,6 +72,10 @@ AST_T* parser_parse_list(parser_T* parser) {
         parser_eat(parser, TOKEN_EQUALS_GT);
         ast->type = AST_FUNCTION;
         ast->value = parser_parse_block(parser);
+    } else if (parser->current_token->type == TOKEN_LBRACE) {
+        ast->type = AST_FUNCTION;
+
+        ast->value = parser_parse_block(parser);
     }
 
     return ast;
@@ -96,6 +100,7 @@ AST_T* parser_parse_block(parser_T* parser) {
 
         parser_eat(parser, TOKEN_SEMI);
     }
+
     parser_eat(parser, TOKEN_RBRACE);
 
     return ast;
@@ -129,18 +134,26 @@ AST_T* parser_parse_id(parser_T* parser) {
     parser_eat(parser, TOKEN_ID);
 
     if (parser->current_token->type == TOKEN_LPAREN) {
-        AST_T* ast = init_ast(AST_CALL);
-        ast->value = parser_parse_list(parser);
-        ast->name = id_value;
+        AST_T* ret_ast = init_ast(AST_CALL);
+        ret_ast->value = parser_parse_list(parser);
+        ret_ast->name = id_value;
         
-        return ast;
+        return ret_ast;
     } else {
         const char* type = id_value;
 
         id_value = calloc (strlen(parser->current_token->value) + 1, sizeof(char));
         strcpy(id_value, parser->current_token->value);
         parser_eat(parser, TOKEN_ID);
-        
+
+        if (parser->current_token->type == TOKEN_LPAREN) {
+            AST_T* ret_ast = init_ast(AST_CALL);
+            ret_ast->value = parser_parse_list(parser);
+            ret_ast->name = id_value;
+
+            return ret_ast;
+        }
+
         if (parser->current_token->type == TOKEN_EQUALS) {
             parser_eat(parser, TOKEN_EQUALS);
             AST_T* ast = init_ast(AST_ASSIGMENT);

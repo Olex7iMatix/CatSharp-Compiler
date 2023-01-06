@@ -14,13 +14,12 @@ char* as_f_root(AST_T* ast) {
                                "int $0x80\n\n";
 
     char* value = calloc((strlen(section_text) + 128), sizeof(char));
-    strcpy(value, section_text);
+    sprintf(value, "%s", section_text);
 
     next_value = as_f(ast);
 
     value = realloc(value, (strlen(next_value) + 1) * sizeof(char));
     strcat(value, next_value);
-    printf("%s\n", value);
 
     return value;
 }

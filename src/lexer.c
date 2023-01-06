@@ -61,10 +61,8 @@ token_T* lexer_next_token(lexer_T* lexer) {
             if (lexer_peek(lexer, 1) == '=') { lexer_advance(lexer); return lexer_advance_with_token(lexer, init_token("==", TOKEN_EQUALS_EQUALS)); }
             else if (lexer_peek(lexer, 1) == '>') { lexer_advance(lexer); return lexer_advance_with_token(lexer, init_token("=>", TOKEN_EQUALS_GT)); }
             else if (lexer_peek(lexer, 1) == '<') { lexer_advance(lexer); return lexer_advance_with_token(lexer, init_token("=<", TOKEN_EQUALS_LT)); }
-            else if (lexer_peek(lexer, 1) == ' ') { return lexer_advance_with_token(lexer, init_token("=", TOKEN_EQUALS)); }
-            else { 
-                printf("[CatSharp] Error: Unexpected character `%c` after '=' on line %d\n", lexer_peek(lexer, 1), lexer->line);
-                exit(1);
+            else {
+                return lexer_advance_with_token(lexer, init_token("=", TOKEN_EQUALS));
             }
         default: printf("[CatSharp] Error: Unexpected character on line %d: `%c`\n", lexer->line, lexer->c); exit(1);
         }
