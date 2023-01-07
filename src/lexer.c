@@ -64,6 +64,8 @@ token_T* lexer_next_token(lexer_T* lexer) {
             else {
                 return lexer_advance_with_token(lexer, init_token("=", TOKEN_EQUALS));
             }
+        case '\0':
+            return init_token(0, TOKEN_EOF);
         default: printf("[CatSharp] Error: Unexpected character on line %d: `%c`\n", lexer->line, lexer->c); exit(1);
         }
     }
