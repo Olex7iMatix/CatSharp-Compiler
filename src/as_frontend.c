@@ -11,15 +11,14 @@ char* as_f_root(AST_T* ast) {
                                "jmp start\n"
                                "movl %eax, %ebx\n"
                                "movl $1, %eax\n"
-                               "int $0x80\n\n"
-                               "\0";
+                               "int $0x80\n\n";
 
     char* value = calloc((strlen(section_text) + 128), sizeof(char));
     sprintf(value, "%s", section_text);
 
     next_value = as_f(ast);
 
-    value = realloc(value, (strlen(next_value) + 1) * sizeof(char));
+    value = realloc(value, (strlen(next_value) + 1 + (strlen(section_text) + 128)) * sizeof(char));
     strcat(value, next_value);
 
     return value;
@@ -78,7 +77,7 @@ char* as_f_assigment(AST_T* ast) {
         s = realloc(s, (strlen(s) + strlen(as_val_val) + 1) * sizeof(char));
         strcat(s, as_val_val);
     }
-
+    
     return s;
 }
 
@@ -93,9 +92,10 @@ char* as_f_call(AST_T* ast) {
 
     if (strcmp(ast->name, "return") == 0) {
         AST_T* first_arg = ast->value->childs_size != 0 ? ast->value->childs[0] : (void*) 0;
+        printf("nah: %i\n", first_arg->int_value);
         const char* template = "movl $%d, %%eax\n"
                                "ret\n";
-        char* ret_s = calloc(strlen(template) + (first_arg ? strlen((char*) first_arg->int_value) : 1) + 1, sizeof(char));
+        char* ret_s = calloc(strlen(template) + 2, sizeof(char));
         sprintf(ret_s, template, first_arg ? first_arg->int_value : 0);
         s = realloc(s, (strlen(ret_s) + 1) * sizeof(char));
         strcat(s, ret_s);
