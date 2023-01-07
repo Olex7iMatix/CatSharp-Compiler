@@ -11,7 +11,8 @@ char* as_f_root(AST_T* ast) {
                                "jmp start\n"
                                "movl %eax, %ebx\n"
                                "movl $1, %eax\n"
-                               "int $0x80\n\n";
+                               "int $0x80\n\n"
+                               "\0";
 
     char* value = calloc((strlen(section_text) + 128), sizeof(char));
     sprintf(value, "%s", section_text);
@@ -25,8 +26,10 @@ char* as_f_root(AST_T* ast) {
 }
 
 char* as_f(AST_T* ast) {
-    char* value = calloc(1, sizeof(char));
+    char* value = 0;
     char* next_val = 0;
+
+    printf("%i\n", ast->type);
 
     switch (ast->type)
     {
@@ -39,7 +42,7 @@ char* as_f(AST_T* ast) {
     default: printf("[CatSharp] Error: Can't compile AST type `%i`\n", ast->type); exit(1);
     }
     
-    value = realloc(value, (strlen(next_val) + 1) * sizeof(char));
+    value = calloc((strlen(next_val) + 1), sizeof(char));
 
     strcat(value, next_val);
 
@@ -47,7 +50,7 @@ char* as_f(AST_T* ast) {
 }
 
 char* as_f_compound(AST_T* ast) {
-    char* val = calloc(1, sizeof(char));
+    char* val = 0;
 
     for (int i = 0; i < ast->childs_size; i++) {
         AST_T* child = ast->childs[i];
@@ -61,9 +64,10 @@ char* as_f_compound(AST_T* ast) {
 }
 
 char* as_f_assigment(AST_T* ast) {
-    char* s = calloc(1, sizeof(char));
-
+    char* s = 0;
+    
     if (ast->value->type == AST_FUNCTION) {
+        
         const char* template = ".globl %s\n"
                                 "%s:\n";
         s = calloc(strlen(template) + (strlen(ast->name) * 2) + 1, sizeof(char));
@@ -79,19 +83,19 @@ char* as_f_assigment(AST_T* ast) {
 }
 
 char* as_f_variable(AST_T* ast) {
-    char* s = calloc(1, sizeof(char));
+    char* s = 0;
     
     return s;
 }
 
-char* as_f_call(AST_T* ast) {    
-    char* s = calloc(1, sizeof(char));
-    
+char* as_f_call(AST_T* ast) {
+    char* s = 0;
+
     if (strcmp(ast->name, "return") == 0) {
         AST_T* first_arg = ast->value->childs_size != 0 ? ast->value->childs[0] : (void*) 0;
         const char* template = "movl $%d, %%eax\n"
                                "ret\n";
-        char* ret_s = calloc(strlen(template) + 128, sizeof(char));
+        char* ret_s = calloc(strlen(template) + (first_arg ? strlen((char*) first_arg->int_value) : 1) + 1, sizeof(char));
         sprintf(ret_s, template, first_arg ? first_arg->int_value : 0);
         s = realloc(s, (strlen(ret_s) + 1) * sizeof(char));
         strcat(s, ret_s);
@@ -101,7 +105,7 @@ char* as_f_call(AST_T* ast) {
 }
 
 char* as_f_int(AST_T* ast) {
-    char* s = calloc(1, sizeof(char));
+    char* s = 0;
     
     return s;
 }

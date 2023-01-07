@@ -54,13 +54,14 @@ void writeToFile(const char* filename, const char* content) {
 
     FILE* fp;
 
-    fp = fopen(filename, "wb");
+    fp = fopen(filename, "w");
     if (fp == NULL) {
         printf("Could not open file `%s` (Write Purpose)\n", filename);
         exit(1);
     }
 
     fputs(content, fp);
+    fputc(EOF, fp);
 
     fclose(fp);
 }
