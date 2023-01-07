@@ -74,7 +74,7 @@ char* as_f_assigment(AST_T* ast) {
         AST_T* as_val = ast->value;
 
         char* as_val_val = as_f(as_val->value);
-        s = realloc(s, (strlen(s) + strlen(as_val_val) + 1) * sizeof(char));
+        s = realloc(s, (strlen(s) + strlen(as_val_val) + 2) * sizeof(char));
         strcat(s, as_val_val);
     }
     
