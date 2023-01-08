@@ -13,6 +13,7 @@ typedef struct AST_STRUCT {
         AST_VARIABLE,
         AST_STATEMENT,
         AST_INT,
+        AST_STRING,
         AST_NOOP
     } type;
 
@@ -24,6 +25,8 @@ typedef struct AST_STRUCT {
 
     // AST_INT
     int int_value;
+    // AST_STRING
+    char* string_value;
 } AST_T;
 
 AST_T* init_ast(int type);

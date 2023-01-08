@@ -17,12 +17,11 @@ int checkFileExists(const char* filename) {
 }
 
 char* getFileContent(const char* filename) {
-    FILE* fp;
+    FILE* fp= fopen(filename, "rb");
     char* line = NULL;
     size_t len = 0;
     size_t read;
 
-    fp = fopen(filename, "rb");
     if (fp == NULL) {
         printf("Could not read file `%s`\n", filename);
         exit(1);
@@ -41,22 +40,19 @@ char* getFileContent(const char* filename) {
 }
 
 void writeToFile(const char* filename, const char* content) {
-    if (checkFileExists(filename) == 1) {
-        FILE* f;
-        f = fopen(filename, "w");
-        if(f == NULL)
-        {
-            printf("[CatSharp] Error: Unable to create file `%s`.\n", filename);
+    if (!checkFileExists(filename)) {
+        FILE* f = fopen(filename, "w");
+        if(!f) {
+            fprintf(stderr, "[CatSharp] Error: Unable to create file `%s`.\n", filename);
             exit(1);
         }
-        free(f);
+
+        fclose(f);
     }
 
-    FILE* fp;
-
-    fp = fopen(filename, "w");
-    if (fp == NULL) {
-        printf("Could not open file `%s` (Write Purpose)\n", filename);
+    FILE* fp = fopen(filename, "w");
+    if (!fp) {
+        fprintf(stderr, "Could not open file `%s` (Write Purpose)\n", filename);
         exit(1);
     }
 

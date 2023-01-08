@@ -147,7 +147,7 @@ AST_T* parser_parse_id(parser_T* parser) {
         parser_eat(parser, TOKEN_ID);
 
         if (parser->current_token->type == TOKEN_LPAREN) {
-            AST_T* ret_ast = init_ast(AST_CALL);
+            AST_T* ret_ast = init_ast(AST_ASSIGMENT);
             ret_ast->value = parser_parse_list(parser);
             ret_ast->name = id_value;
 
