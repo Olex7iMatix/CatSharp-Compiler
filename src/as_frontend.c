@@ -28,8 +28,6 @@ char* as_f(AST_T* ast) {
     char* value = 0;
     char* next_val = 0;
 
-    printf("%i\n", ast->type);
-
     switch (ast->type)
     {
     case AST_COMPOUND: next_val = as_f_compound(ast); break;
@@ -92,13 +90,12 @@ char* as_f_call(AST_T* ast) {
 
     if (strcmp(ast->name, "return") == 0) {
         AST_T* first_arg = ast->value->childs_size != 0 ? ast->value->childs[0] : (void*) 0;
-        printf("nah: %i\n", first_arg->int_value);
         const char* template = "movl $%d, %%eax\n"
                                "ret\n";
-        char* ret_s = calloc(strlen(template) + 2, sizeof(char));
+        char* ret_s = calloc(strlen(template) + 128, sizeof(char));
         sprintf(ret_s, template, first_arg ? first_arg->int_value : 0);
-        s = realloc(s, (strlen(ret_s) + 1) * sizeof(char));
-        strcat(s, ret_s);
+        // free(s);
+        return ret_s;
     }
 
     return s;
