@@ -5,6 +5,7 @@
 #include <string.h>
 
 char* as_f_root(AST_T* ast) {
+    char* value = 0;
     char* next_value = 0;
 
     const char* section_text = ".section .text\n"
@@ -13,15 +14,16 @@ char* as_f_root(AST_T* ast) {
                                "movl $1, %eax\n"
                                "int $0x80\n\n";
 
-    char* value = calloc((strlen(section_text) + 128), sizeof(char));
+    value = calloc((strlen(section_text) + 128), sizeof(char));
     sprintf(value, "%s", section_text);
 
     next_value = as_f(ast);
 
-        printf("%s\n", value);
-
-    value = realloc(value, (strlen(next_value) + 1 + (strlen(section_text) + 128)) * sizeof(char));
-    strcat(value, next_value);
+    char* new_value = calloc((strlen(next_value) + 1 + (strlen(section_text) + 128)) * sizeof(char),sizeof(char));
+    sprintf(new_value, "%s%s", value, next_value);
+    free(value);
+    free(next_value);
+    value = new_value;
 
     return value;
 }
@@ -44,6 +46,7 @@ char* as_f(AST_T* ast) {
     value = calloc((strlen(next_val) + 1), sizeof(char));
 
     strcat(value, next_val);
+    free(next_val);
 
     return value;
 }
@@ -57,35 +60,35 @@ char* as_f_compound(AST_T* ast) {
         char* next_val = as_f(child);
         val = realloc(val, (strlen(next_val) + 1) * sizeof(char));
         strcat(val, next_val);
+        free(next_val);
     }
+
+    if (val == 0) { return ""; }
 
     return val;
 }
 
 char* as_f_assigment(AST_T* ast) {
     char* s = 0;
-    
+
     if (ast->value->type == AST_FUNCTION) {
         
         const char* template = ".globl %s\n"
                                 "%s:\n";
-        s = calloc(strlen(template) + (strlen(ast->name) * 2) + 1, sizeof(char));
+        char* as_val_val = as_f(ast->value->value);
+        int size = (strlen(template) + (strlen(ast->name) * 2) + 1 + strlen(as_val_val));
+        s = calloc(size, sizeof(char));
         sprintf(s, template, ast->name, ast->name);
-        AST_T* as_val = ast->value;
-
-        char* as_val_val = as_f(as_val->value);
-        s = realloc(s, (strlen(s) + strlen(as_val_val) + 2) * sizeof(char));
         strcat(s, as_val_val);
-
+        free(as_val_val);
     }
-    
     return s;
 }
 
 char* as_f_variable(AST_T* ast) {
-    char* s = 0;
+    // char* s = 0;
     
-    return s;
+    return "# UwU";
 }
 
 char* as_f_call(AST_T* ast) {
@@ -97,6 +100,9 @@ char* as_f_call(AST_T* ast) {
                                "ret\n";
         s = calloc(strlen(template) + 1, sizeof(char));
         sprintf(s, template, first_arg ? first_arg->int_value : 0);
+    } else {
+        s = malloc(15);
+        strcpy(s, "# UwU");
     }
 
     return s;

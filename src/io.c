@@ -1,9 +1,10 @@
 #include "include/io.h"
 
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
+#include<stdio.h>
+#include<stdint.h>
+#include<stdlib.h>
+#include<string.h>
+#include<unistd.h>
 
 int checkFileExists(const char* filename) {
     if( access( filename, F_OK ) != -1)
@@ -39,27 +40,17 @@ char* getFileContent(const char* filename) {
     return buffer;
 }
 
-void writeToFile(const char* filename, const char* content) {
-    if (!checkFileExists(filename)) {
-        FILE* f = fopen(filename, "w");
-        if(!f) {
-            fprintf(stderr, "[CatSharp] Error: Unable to create file `%s`.\n", filename);
-            exit(1);
-        }
-
-        fclose(f);
+void writeToFile(const char* filename, const char* data) {
+    FILE* file = fopen(filename, "r+");
+    if(file == 0) {
+        printf("Unable to open the output file.");
+        exit(-1);
     }
-
-    FILE* fp = fopen(filename, "w");
-    if (!fp) {
-        fprintf(stderr, "Could not open file `%s` (Write Purpose)\n", filename);
-        exit(1);
-    }
-
-    fputs(content, fp);
-    fputc(EOF, fp);
-
-    fclose(fp);
+    file = fopen(filename, "w+");
+    fwrite(data, sizeof(char), strlen(data), file);
+    fflush(file);
+    fclose(file);
+    return;
 }
 
 void createFile(const char* filename) {
